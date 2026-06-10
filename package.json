@@ -1,0 +1,81 @@
+{
+  "name": "mermaid-reactflow-render",
+  "version": "0.1.0",
+  "description": "Render Mermaid flowcharts as interactive React Flow diagrams. A render-only library (no editor) inspired by mermaid-reactflow-editor.",
+  "type": "module",
+  "license": "MIT",
+  "author": "taoche",
+  "keywords": [
+    "mermaid",
+    "reactflow",
+    "react-flow",
+    "flowchart",
+    "diagram",
+    "dagre",
+    "render",
+    "visualization"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taoche/mermaid-reactflow-render.git"
+  },
+  "homepage": "https://github.com/taoche/mermaid-reactflow-render#readme",
+  "bugs": {
+    "url": "https://github.com/taoche/mermaid-reactflow-render/issues"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "dev": "vite --config vite.playground.config.ts",
+    "preview": "vite preview --config vite.playground.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^1.1.4",
+    "reactflow": "^11.11.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@types/node": "^22.19.20",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "@vitest/coverage-v8": "^2.1.2",
+    "jsdom": "^25.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8",
+    "vite-plugin-dts": "^4.2.3",
+    "vitest": "^2.1.2"
+  }
+}

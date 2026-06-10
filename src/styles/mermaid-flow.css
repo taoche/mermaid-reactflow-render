@@ -1,0 +1,152 @@
+.mrf-flow {
+  position: relative;
+}
+
+/* Base node */
+.mrf-node {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #1f2937;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mrf-shape-circle {
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+.mrf-shape-stadium {
+  border-radius: 30px;
+}
+
+.mrf-shape-round {
+  border-radius: 15px;
+}
+
+.mrf-node-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.mrf-node-label {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 100%;
+  color: #2d3748;
+  text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.mrf-node-label div {
+  margin: 1px 0;
+}
+
+/* Diamond */
+.mrf-diamond-node {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.mrf-diamond-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mrf-diamond-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.mrf-diamond-node .mrf-node-label {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  max-width: 78%;
+}
+
+/* Group / subgraph container */
+.react-flow__node-group {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.mrf-group-node {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.mrf-group-label {
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+  pointer-events: none;
+}
+
+/* Handles: invisible for a clean render-only look, but present for edges */
+.mrf-handle {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+  border: none;
+  opacity: 0;
+}
+
+/* Remove React Flow's default node chrome on our custom node types */
+.react-flow__node-custom,
+.react-flow__node-diamond {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.react-flow__node-diamond {
+  background: transparent !important;
+}
+
+/* Edge labels */
+.react-flow__edge-text {
+  font-size: 12px;
+  font-weight: 500;
+}
