@@ -54,7 +54,21 @@ The component fills its parent, so give the wrapper an explicit size.
 | `nodes` / `edges`| `Node[]` / `Edge[]`   | —       | Pre-computed elements (overrides `code`).              |
 | `showControls`   | `boolean`             | `true`  | Bottom-left zoom / fit controls.                       |
 | `showBackground` | `boolean`             | `true`  | Dotted background grid.                                |
+| `direction`      | `"TB"｜"BT"｜"LR"｜"RL"` | —     | Force layout direction, overriding the source.         |
 | `fitView`        | `boolean`             | `true`  | Fit the diagram to the viewport on mount.              |
+
+### Horizontal vs. vertical layout
+
+By default the layout follows the direction declared in the Mermaid source
+(`flowchart TD`, `flowchart LR`, …). You can override it with the `direction`
+prop — `"LR"`/`"RL"` lay the flow out **horizontally**, `"TB"`/`"BT"`
+**vertically**:
+
+```tsx
+<MermaidFlow code={code} direction="LR" />
+```
+
+The same override is available on the converter: `convertMermaidToReactFlow(code, { direction: "LR" })`.
 
 All other [React Flow props](https://reactflow.dev/api-reference/react-flow) are
 forwarded.

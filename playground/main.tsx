@@ -1,6 +1,6 @@
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { MermaidFlow } from "../src/index.js";
+import { MermaidFlow, type FlowDirection } from "../src/index.js";
 
 const SAMPLE = `flowchart TD
     Start([User runs the pre-departure document check]) --> Announce[Tell user the departure window:<br/>today through tomorrow]
@@ -31,28 +31,53 @@ const SAMPLE = `flowchart TD
     NextFlagged --> Report[Step 3: Display report<br/>metric cards + flagged table]
     Report --> End`;
 
+const DIRECTIONS: Array<{ label: string; value: FlowDirection | "" }> = [
+  { label: "From source", value: "" },
+  { label: "Top → Bottom (TB)", value: "TB" },
+  { label: "Bottom → Top (BT)", value: "BT" },
+  { label: "Left → Right (LR)", value: "LR" },
+  { label: "Right → Left (RL)", value: "RL" },
+];
+
 function App() {
   const [code, setCode] = useState(SAMPLE);
+  const [direction, setDirection] = useState<FlowDirection | "">("");
   return (
     <div style={{ display: "flex", height: "100%" }}>
-      <textarea
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        spellCheck={false}
-        style={{
-          width: 360,
-          height: "100%",
-          border: "none",
-          borderRight: "1px solid #e5e7eb",
-          padding: 12,
-          fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-          fontSize: 12,
-          resize: "none",
-          outline: "none",
-        }}
-      />
+      <div style={{ display: "flex", flexDirection: "column", width: 360, borderRight: "1px solid #e5e7eb" }}>
+        <div style={{ padding: 8, borderBottom: "1px solid #e5e7eb", display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
+          <label htmlFor="dir">Direction</label>
+          <select
+            id="dir"
+            data-testid="direction"
+            value={direction}
+            onChange={(e) => setDirection(e.target.value as FlowDirection | "")}
+            style={{ flex: 1, padding: 4 }}
+          >
+            {DIRECTIONS.map((d) => (
+              <option key={d.value || "src"} value={d.value}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <textarea
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          spellCheck={false}
+          style={{
+            flex: 1,
+            border: "none",
+            padding: 12,
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+            fontSize: 12,
+            resize: "none",
+            outline: "none",
+          }}
+        />
+      </div>
       <div style={{ flex: 1, height: "100%" }} data-testid="canvas">
-        <MermaidFlow code={code} />
+        <MermaidFlow code={code} direction={direction || undefined} />
       </div>
     </div>
   );

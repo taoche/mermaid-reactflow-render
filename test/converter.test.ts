@@ -76,6 +76,28 @@ describe("convertMermaidToReactFlow", () => {
     expect(ingest?.extent).toBe("parent");
   });
 
+  it("lays out vertically by default (target below source)", () => {
+    const { nodes } = convertMermaidToReactFlow("flowchart TD\n A[A] --> B[B]");
+    const a = nodes.find((n) => n.id === "A")!;
+    const b = nodes.find((n) => n.id === "B")!;
+    expect(b.position.y).toBeGreaterThan(a.position.y);
+  });
+
+  it("honours a direction override to lay out horizontally", () => {
+    const code = "flowchart TD\n A[A] --> B[B]";
+    const { nodes } = convertMermaidToReactFlow(code, { direction: "LR" });
+    const a = nodes.find((n) => n.id === "A")!;
+    const b = nodes.find((n) => n.id === "B")!;
+    expect(b.position.x).toBeGreaterThan(a.position.x);
+  });
+
+  it("uses right/left handles for horizontal flows", () => {
+    const { edges, nodes } = convertMermaidToReactFlow("flowchart LR\n A --> B");
+    expect(edges[0].sourceHandle).toBe("right-source");
+    expect(edges[0].targetHandle).toBe("left-target");
+    expect(nodes.find((n) => n.id === "A")?.sourcePosition).toBe("right");
+  });
+
   it("handles the full pre-departure flowchart without throwing", () => {
     const big = `flowchart TD
       Start([User runs the pre-departure document check]) --> Announce[Tell user the departure window:<br/>today through tomorrow]

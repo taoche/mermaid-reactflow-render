@@ -8,6 +8,7 @@ import ReactFlow, {
   type ReactFlowProps,
 } from "reactflow";
 import { convertMermaidToReactFlow } from "../converter/index.js";
+import type { FlowDirection } from "../converter/index.js";
 import { CustomNode } from "./CustomNode.js";
 import { DiamondNode } from "./DiamondNode.js";
 import { GroupNode } from "./GroupNode.js";
@@ -30,6 +31,11 @@ export interface MermaidFlowProps
   showControls?: boolean;
   /** Show the dotted background grid. Default true. */
   showBackground?: boolean;
+  /**
+   * Force the layout direction, overriding the direction declared in `code`.
+   * `"LR"`/`"RL"` lay the flow out horizontally; `"TB"`/`"BT"` vertically.
+   */
+  direction?: FlowDirection;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -46,6 +52,7 @@ export function MermaidFlow({
   edges: edgesProp,
   showControls = true,
   showBackground = true,
+  direction,
   className,
   style,
   fitView = true,
@@ -55,8 +62,8 @@ export function MermaidFlow({
     if (nodesProp && edgesProp) {
       return { nodes: nodesProp, edges: edgesProp };
     }
-    return convertMermaidToReactFlow(code ?? "");
-  }, [code, nodesProp, edgesProp]);
+    return convertMermaidToReactFlow(code ?? "", { direction });
+  }, [code, nodesProp, edgesProp, direction]);
 
   return (
     <div className={`mrf-flow ${className ?? ""}`.trim()} style={{ width: "100%", height: "100%", ...style }}>

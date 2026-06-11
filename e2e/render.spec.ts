@@ -56,6 +56,18 @@ test.describe("MermaidFlow render", () => {
     expect(report!.y).toBeGreaterThan(start!.y);
   });
 
+  test("supports horizontal (LR) layout via the direction selector", async ({ page }) => {
+    await page.selectOption('[data-testid="direction"]', "LR");
+    await page.waitForTimeout(600);
+    const start = await page.locator('[data-id="Start"]').boundingBox();
+    const announce = await page.locator('[data-id="Announce"]').boundingBox();
+    const report = await page.locator('[data-id="Report"]').boundingBox();
+    expect(start).not.toBeNull();
+    // In LR the flow runs left-to-right, so later nodes sit to the right.
+    expect(announce!.x).toBeGreaterThan(start!.x);
+    expect(report!.x).toBeGreaterThan(announce!.x);
+  });
+
   test("matches the reference render visually", async ({ page }) => {
     // Fit and settle the diagram before snapshotting.
     await page.locator(".react-flow__controls-fitview").click();
