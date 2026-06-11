@@ -100,6 +100,21 @@ npm run test:e2e     # Playwright visual/e2e tests
 npm run build        # build the publishable library into dist/
 ```
 
+## Publishing to npm
+
+This package builds to `dist/` and is configured for npm publishing
+(`exports`, `types`, `files`, `sideEffects`). Because the maintainer's npm
+account enforces 2FA, publishing requires one of:
+
+- **Local with a one-time code:**
+  ```bash
+  npm publish --access public --otp=<6-digit-code>
+  ```
+- **CI release:** add an npm **granular token with "Bypass 2FA"** as the
+  `NPM_TOKEN` repository secret, then create a GitHub Release (or run the
+  *Publish to npm* workflow manually). See
+  [.github/workflows/release.yml](.github/workflows/release.yml).
+
 ## License
 
 MIT — see [LICENSE](./LICENSE). Includes attribution to the original
