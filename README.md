@@ -9,7 +9,7 @@ The conversion approach and visual styling are inspired by and adapted from the
 MIT-licensed [mermaid-reactflow-editor](https://github.com/albingcj/mermaid-reactflow-editor)
 by albingcj — this package extracts and reimplements just the rendering half.
 
-![Sample flowchart rendered with mermaid-reactflow-render](./docs/demo.png)
+![Sample flowchart rendered horizontally (LR) with mermaid-reactflow-render](./docs/demo.png)
 
 ## Install
 
