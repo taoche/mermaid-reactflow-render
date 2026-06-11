@@ -8,6 +8,8 @@ export type { CustomNodeData } from "./components/CustomNode.js";
 export { DiamondNode } from "./components/DiamondNode.js";
 export { GroupNode } from "./components/GroupNode.js";
 export type { GroupNodeData } from "./components/GroupNode.js";
+export { DagreEdge } from "./components/DagreEdge.js";
+export type { DagreEdgeData } from "./components/DagreEdge.js";
 
 export {
   convertMermaidToReactFlow,

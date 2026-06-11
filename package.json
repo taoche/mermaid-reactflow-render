@@ -1,6 +1,6 @@
 {
   "name": "mermaid-reactflow-render",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Render Mermaid flowcharts as interactive React Flow diagrams. A render-only library (no editor) inspired by mermaid-reactflow-editor.",
   "type": "module",
   "license": "MIT",

@@ -19,6 +19,17 @@ test.describe("MermaidFlow render", () => {
     expect(await page.locator("marker path, marker polyline, defs marker").count()).toBeGreaterThan(0);
   });
 
+  test("routes edges through dagre waypoints (curved paths)", async ({ page }) => {
+    const dagreEdges = page.locator(".react-flow__edge-dagre");
+    expect(await dagreEdges.count()).toBeGreaterThan(20);
+    // A waypoint-routed path uses quadratic curves; assert at least one has them.
+    const hasCurve = await page
+      .locator(".react-flow__edge-dagre .react-flow__edge-path")
+      .first()
+      .evaluate((el) => (el.getAttribute("d") ?? "").includes("Q"));
+    expect(hasCurve).toBe(true);
+  });
+
   test("colors nodes by shape", async ({ page }) => {
     const startBg = await page
       .locator('[data-id="Start"] .mrf-node')
@@ -43,8 +54,8 @@ test.describe("MermaidFlow render", () => {
   });
 
   test("renders edge labels", async ({ page }) => {
-    await expect(page.locator(".react-flow__edge-textwrapper", { hasText: "Yes" }).first()).toBeVisible();
-    await expect(page.locator(".react-flow__edge-textwrapper", { hasText: "No" }).first()).toBeVisible();
+    await expect(page.locator(".mrf-edge-label", { hasText: "Yes" }).first()).toBeVisible();
+    await expect(page.locator(".mrf-edge-label", { hasText: "No" }).first()).toBeVisible();
   });
 
   test("lays the diagram out top-to-bottom", async ({ page }) => {

@@ -38,13 +38,24 @@ describe("convertMermaidToReactFlow", () => {
     }
   });
 
-  it("creates one edge per connection with smoothstep + arrow markers", () => {
+  it("creates one edge per connection with arrow markers", () => {
     const { edges } = convertMermaidToReactFlow(SAMPLE);
     expect(edges).toHaveLength(4);
     for (const edge of edges) {
-      expect(edge.type).toBe("smoothstep");
+      expect(["dagre", "smoothstep"]).toContain(edge.type);
       expect(edge.animated).toBe(true);
       expect(edge.markerEnd).toBeTruthy();
+    }
+  });
+
+  it("routes edges through dagre waypoints when available", () => {
+    const { edges } = convertMermaidToReactFlow(SAMPLE);
+    const routed = edges.filter((e) => e.type === "dagre");
+    expect(routed.length).toBeGreaterThan(0);
+    for (const edge of routed) {
+      const points = (edge.data as { points?: Array<{ x: number; y: number }> } | undefined)?.points;
+      expect(Array.isArray(points)).toBe(true);
+      expect(points!.length).toBeGreaterThanOrEqual(2);
     }
   });
 

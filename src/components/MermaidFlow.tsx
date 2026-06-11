@@ -13,11 +13,16 @@ import type { FlowDirection } from "../converter/index.js";
 import { CustomNode } from "./CustomNode.js";
 import { DiamondNode } from "./DiamondNode.js";
 import { GroupNode } from "./GroupNode.js";
+import { DagreEdge } from "./DagreEdge.js";
 
 const NODE_TYPES = {
   custom: CustomNode,
   diamond: DiamondNode,
   group: GroupNode,
+};
+
+const EDGE_TYPES = {
+  dagre: DagreEdge,
 };
 
 export interface MermaidFlowProps
@@ -72,6 +77,7 @@ export function MermaidFlow({
         nodes={computed.nodes}
         edges={computed.edges}
         nodeTypes={NODE_TYPES}
+        edgeTypes={EDGE_TYPES}
         fitView={fitView}
         proOptions={{ hideAttribution: true }}
         nodesDraggable={rest.nodesDraggable ?? false}
