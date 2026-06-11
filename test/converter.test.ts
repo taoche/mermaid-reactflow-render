@@ -107,8 +107,9 @@ describe("convertMermaidToReactFlow", () => {
 
   it("uses right/left handles for horizontal flows", () => {
     const { edges, nodes } = convertMermaidToReactFlow("flowchart LR\n A --> B");
-    expect(edges[0].sourceHandle).toBe("right-source");
-    expect(edges[0].targetHandle).toBe("left-target");
+    const edge = edges[0]!;
+    expect(edge.sourceHandle).toBe("right-source");
+    expect(edge.targetHandle).toBe("left-target");
     expect(nodes.find((n) => n.id === "A")?.sourcePosition).toBe("right");
   });
 

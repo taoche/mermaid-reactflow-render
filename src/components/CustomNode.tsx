@@ -16,7 +16,7 @@ function renderLabel(label: string) {
   if (!label.includes("\n")) {
     return label;
   }
-  return label.split("\n").map((line, i) => <div key={i}>{line}</div>);
+  return label.split("\n").map((line, i) => <div key={`${i}-${line}`}>{line}</div>);
 }
 
 function CustomNodeInner({ data, isConnectable }: NodeProps<CustomFlowNode>) {

@@ -67,7 +67,7 @@ function stitchMultilineDefinitions(lines: string[]): string[] {
   const out: string[] = [];
   let i = 0;
   while (i < lines.length) {
-    const line = lines[i].trim();
+    const line = (lines[i] ?? "").trim();
     const open = (line.match(/[[({]/g) || []).length;
     const close = (line.match(/[\])}]/g) || []).length;
     if (open > close && i < lines.length - 1) {
@@ -76,7 +76,7 @@ function stitchMultilineDefinitions(lines: string[]): string[] {
       let openCount = open;
       let closeCount = close;
       while (j < lines.length && openCount > closeCount) {
-        const next = lines[j].trim();
+        const next = (lines[j] ?? "").trim();
         combined += " " + next;
         openCount += (next.match(/[[({]/g) || []).length;
         closeCount += (next.match(/[\])}]/g) || []).length;
@@ -119,6 +119,9 @@ function scanNodeDefinitions(lines: string[]): Map<string, NodeDefinition> {
       const prefix = match[1];
       const nodeId = match[2];
       const openChar = match[3];
+      if (prefix === undefined || nodeId === undefined || openChar === undefined) {
+        continue;
+      }
       const start = match.index + prefix.length;
       if (seen.has(start) || defs.has(nodeId)) {
         continue;
@@ -154,7 +157,7 @@ function scanNodeDefinitions(lines: string[]): Map<string, NodeDefinition> {
         const shape = detectShape(fullDef);
         let rawLabel = nodeId;
         const inner = shapeDef.match(/^[[({](.*)[\])}]$/s);
-        if (inner) {
+        if (inner?.[1] !== undefined) {
           rawLabel = inner[1]
             .replace(/^"(.*)"$/, "$1")
             .replace(/^'(.*)'$/, "$1");
@@ -178,20 +181,20 @@ function parseSubgraphHeader(line: string, index: number): SubgraphHeader | null
   }
 
   const quoteMatch = rest.match(/^(["'])(.*?)\1/);
-  if (quoteMatch) {
+  if (quoteMatch?.[2] !== undefined) {
     const title = quoteMatch[2];
     return { id: slugify(title, `sg-${index}`), title };
   }
 
   const bracketMatch = rest.match(/^([^\s[]+)(?:\s*\[(.+?)\])?/);
-  if (bracketMatch) {
-    const idToken = bracketMatch[1];
-    const bracketTitle = bracketMatch[2];
+  const idToken = bracketMatch?.[1];
+  if (idToken) {
+    const bracketTitle = bracketMatch?.[2];
     if (bracketTitle) {
       return { id: idToken, title: bracketTitle };
     }
     const altQuote = rest.match(/^\S+\s+(["'])(.*?)\1/);
-    if (altQuote) {
+    if (altQuote?.[2] !== undefined) {
       return { id: idToken, title: altQuote[2] };
     }
     if (rest.indexOf(" ") !== -1) {
@@ -209,15 +212,15 @@ interface EdgeToken {
 
 function extractToken(str: string, startIndex: number): EdgeToken | null {
   const idMatch = str.slice(startIndex).match(/^\s*([A-Za-z0-9_]+)/);
-  if (!idMatch) {
+  const id = idMatch?.[1];
+  if (!idMatch || id === undefined) {
     return null;
   }
-  const id = idMatch[1];
   let idx = startIndex + idMatch[0].length;
 
   const rest = str.slice(idx);
   const openMatch = rest.match(/^\s*([[({])/);
-  if (openMatch) {
+  if (openMatch?.[1]) {
     const openChar = openMatch[1];
     const openPos = idx + rest.indexOf(openChar);
     const closeChar = openChar === "[" ? "]" : openChar === "(" ? ")" : "}";
@@ -238,15 +241,21 @@ interface ParsedEdgeRaw {
   endIndex: number;
 }
 
+/** Advance past run of whitespace starting at `from`. Index-safe. */
+function skipWhitespace(str: string, from: number): number {
+  let i = from;
+  while (i < str.length && /\s/.test(str.charAt(i))) {
+    i++;
+  }
+  return i;
+}
+
 function parseEdge(str: string): ParsedEdgeRaw | null {
   const src = extractToken(str, 0);
   if (!src) {
     return null;
   }
-  let i = src.endIndex;
-  while (i < str.length && /\s/.test(str[i])) {
-    i++;
-  }
+  let i = skipWhitespace(str, src.endIndex);
 
   let foundArrowIndex = -1;
   let foundArrow = "";
@@ -264,7 +273,7 @@ function parseEdge(str: string): ParsedEdgeRaw | null {
   if (foundArrowIndex !== -1) {
     const between = str.slice(i, foundArrowIndex);
     const prePipe = between.match(/\|(.*?)\|/);
-    if (prePipe) {
+    if (prePipe?.[1] !== undefined) {
       edgeLabel = prePipe[1];
     } else {
       const inline = between
@@ -277,10 +286,8 @@ function parseEdge(str: string): ParsedEdgeRaw | null {
     }
     op = foundArrow;
     i = foundArrowIndex + foundArrow.length;
-    while (i < str.length && /\s/.test(str[i])) {
-      i++;
-    }
-    if (str[i] === "|") {
+    i = skipWhitespace(str, i);
+    if (str.charAt(i) === "|") {
       const next = str.indexOf("|", i + 1);
       if (next !== -1) {
         edgeLabel = str.slice(i + 1, next);
@@ -298,10 +305,8 @@ function parseEdge(str: string): ParsedEdgeRaw | null {
     if (!op) {
       return null;
     }
-    while (i < str.length && /\s/.test(str[i])) {
-      i++;
-    }
-    if (str[i] === "|") {
+    i = skipWhitespace(str, i);
+    if (str.charAt(i) === "|") {
       const next = str.indexOf("|", i + 1);
       if (next !== -1) {
         edgeLabel = str.slice(i + 1, next);
@@ -310,9 +315,7 @@ function parseEdge(str: string): ParsedEdgeRaw | null {
     }
   }
 
-  while (i < str.length && /\s/.test(str[i])) {
-    i++;
-  }
+  i = skipWhitespace(str, i);
   const tgt = extractToken(str, i);
   if (!tgt) {
     return null;
@@ -342,7 +345,7 @@ export function parseMermaid(code: string): ParseResult {
 
   let direction: FlowDirection = "TB";
   const dirMatch = code.match(/(?:flowchart|graph)\s+(TB|TD|BT|RL|LR)/i);
-  if (dirMatch) {
+  if (dirMatch?.[1]) {
     direction = normalizeDirection(dirMatch[1]);
   }
 
@@ -370,9 +373,10 @@ export function parseMermaid(code: string): ParseResult {
         stack.push(header.id);
       }
     } else if (/^direction\s+(TB|TD|BT|RL|LR)$/i.test(line)) {
-      const dir = line.match(/^direction\s+(TB|TD|BT|RL|LR)$/i)![1];
-      if (stack.length > 0) {
-        const sg = subgraphMap.get(stack[stack.length - 1]);
+      const dir = line.match(/^direction\s+(TB|TD|BT|RL|LR)$/i)?.[1];
+      const top = stack[stack.length - 1];
+      if (dir && top) {
+        const sg = subgraphMap.get(top);
         if (sg) {
           sg.direction = normalizeDirection(dir);
         }
@@ -413,6 +417,9 @@ export function parseMermaid(code: string): ParseResult {
   stack.length = 0;
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
+    if (line === undefined) {
+      continue;
+    }
 
     if (line.startsWith("subgraph")) {
       const header = parseSubgraphHeader(line, index);
@@ -478,8 +485,9 @@ export function parseMermaid(code: string): ParseResult {
       const nodeMatch =
         line.match(/^([A-Za-z0-9_]+)([[({][^\])}]*[\])}])/) ||
         line.match(/^([A-Za-z0-9_]+)$/);
-      if (nodeMatch && !nodeMap.has(nodeMatch[1]) && !subgraphMap.has(nodeMatch[1])) {
-        createOrGetNode(nodeMatch[1], currentSubgraph);
+      const nodeId = nodeMatch?.[1];
+      if (nodeId && !nodeMap.has(nodeId) && !subgraphMap.has(nodeId)) {
+        createOrGetNode(nodeId, currentSubgraph);
       }
     }
   }

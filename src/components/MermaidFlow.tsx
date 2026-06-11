@@ -62,6 +62,12 @@ export function MermaidFlow({
   className,
   style,
   fitView = true,
+  // Read-only defaults: pulled out of `rest` so callers can still override them.
+  nodesDraggable = false,
+  nodesConnectable = false,
+  elementsSelectable = true,
+  minZoom = 0.05,
+  proOptions,
   ...rest
 }: MermaidFlowProps) {
   const computed = useMemo(() => {
@@ -74,17 +80,17 @@ export function MermaidFlow({
   return (
     <div className={`mrf-flow ${className ?? ""}`.trim()} style={{ width: "100%", height: "100%", ...style }}>
       <ReactFlow
+        {...rest}
         nodes={computed.nodes}
         edges={computed.edges}
         nodeTypes={NODE_TYPES}
         edgeTypes={EDGE_TYPES}
         fitView={fitView}
-        proOptions={{ hideAttribution: true }}
-        nodesDraggable={rest.nodesDraggable ?? false}
-        nodesConnectable={rest.nodesConnectable ?? false}
-        elementsSelectable={rest.elementsSelectable ?? true}
-        minZoom={0.05}
-        {...rest}
+        proOptions={proOptions ?? { hideAttribution: true }}
+        nodesDraggable={nodesDraggable}
+        nodesConnectable={nodesConnectable}
+        elementsSelectable={elementsSelectable}
+        minZoom={minZoom}
       >
         {showBackground ? <Background variant={BackgroundVariant.Dots} gap={16} size={1} /> : null}
         {showControls ? <Controls showInteractive={false} /> : null}

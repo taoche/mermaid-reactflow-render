@@ -102,7 +102,7 @@ describe("parseMermaid: subgraphs", () => {
       A2 --> B`;
     const { subgraphs, nodes } = parseMermaid(code);
     expect(subgraphs).toHaveLength(1);
-    expect(nodes.find((n) => n.id === "A1")?.subgraph).toBe(subgraphs[0].id);
+    expect(nodes.find((n) => n.id === "A1")?.subgraph).toBe(subgraphs[0]!.id);
     expect(nodes.find((n) => n.id === "B")?.subgraph).toBeUndefined();
   });
 
@@ -127,7 +127,7 @@ describe("parseMermaid: subgraphs", () => {
         A --> B
       end`;
     const { subgraphs } = parseMermaid(code);
-    expect(subgraphs[0].direction).toBe("LR");
+    expect(subgraphs[0]!.direction).toBe("LR");
   });
 });
 

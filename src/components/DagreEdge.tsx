@@ -13,25 +13,31 @@ export interface DagreEdgeData extends Record<string, unknown> {
 
 export type DagreFlowEdge = Edge<DagreEdgeData, "dagre">;
 
-/** Build a smooth SVG path through the given points using Catmull-Rom-ish curves. */
-function buildPath(points: Array<{ x: number; y: number }>): string {
-  if (points.length < 2) {
+type Point = { x: number; y: number };
+
+/** Build a smooth SVG path through the given waypoints (>= 2 points). */
+function buildPath(points: readonly Point[]): string {
+  const first = points[0];
+  const last = points[points.length - 1];
+  if (!first || !last) {
     return "";
   }
   if (points.length === 2) {
-    return `M${points[0].x},${points[0].y} L${points[1].x},${points[1].y}`;
+    return `M${first.x},${first.y} L${last.x},${last.y}`;
   }
 
   // Quadratic curves through midpoints give a smooth, dagre-following line.
-  let d = `M${points[0].x},${points[0].y}`;
+  let d = `M${first.x},${first.y}`;
   for (let i = 1; i < points.length - 1; i++) {
-    const mid = {
-      x: (points[i].x + points[i + 1].x) / 2,
-      y: (points[i].y + points[i + 1].y) / 2,
-    };
-    d += ` Q${points[i].x},${points[i].y} ${mid.x},${mid.y}`;
+    const cur = points[i];
+    const next = points[i + 1];
+    if (!cur || !next) {
+      continue;
+    }
+    const midX = (cur.x + next.x) / 2;
+    const midY = (cur.y + next.y) / 2;
+    d += ` Q${cur.x},${cur.y} ${midX},${midY}`;
   }
-  const last = points[points.length - 1];
   d += ` L${last.x},${last.y}`;
   return d;
 }
@@ -48,21 +54,15 @@ function DagreEdgeInner({
   targetY,
 }: EdgeProps<DagreFlowEdge>) {
   const points = data?.points;
+  const hasPoints = !!points && points.length >= 2;
 
   // Fall back to a straight line if waypoints are missing.
-  const path =
-    points && points.length >= 2
-      ? buildPath(points)
-      : `M${sourceX},${sourceY} L${targetX},${targetY}`;
+  const path = hasPoints ? buildPath(points) : `M${sourceX},${sourceY} L${targetX},${targetY}`;
 
   // Place the label near the middle waypoint for stable positioning.
-  let labelX = (sourceX + targetX) / 2;
-  let labelY = (sourceY + targetY) / 2;
-  if (points && points.length > 0) {
-    const mid = points[Math.floor(points.length / 2)];
-    labelX = mid.x;
-    labelY = mid.y;
-  }
+  const mid = hasPoints ? points[Math.floor(points.length / 2)] : undefined;
+  const labelX = mid?.x ?? (sourceX + targetX) / 2;
+  const labelY = mid?.y ?? (sourceY + targetY) / 2;
 
   return (
     <>
@@ -74,7 +74,7 @@ function DagreEdgeInner({
             style={{
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
-              pointerEvents: "all",
+              pointerEvents: "none",
               ...labelStyle,
             }}
           >
