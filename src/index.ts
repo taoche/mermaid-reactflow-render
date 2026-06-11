@@ -1,4 +1,4 @@
-import "reactflow/dist/style.css";
+import "@xyflow/react/dist/style.css";
 import "./styles/mermaid-flow.css";
 
 export { MermaidFlow } from "./components/MermaidFlow.js";

@@ -56,10 +56,13 @@ describe("convertMermaidToReactFlow", () => {
 
   it("colors nodes by shape", () => {
     const { nodes } = convertMermaidToReactFlow(SAMPLE);
-    const diamond = nodes.find((n) => n.id === "Decide");
-    expect(diamond?.data.style.backgroundColor).toBe("#FFF3E0");
-    const rect = nodes.find((n) => n.id === "Work");
-    expect(rect?.data.style.backgroundColor).toBe("#E3F2FD");
+    const bgOf = (id: string) => {
+      const node = nodes.find((n) => n.id === id);
+      const style = node?.data.style as { backgroundColor?: string } | undefined;
+      return style?.backgroundColor;
+    };
+    expect(bgOf("Decide")).toBe("#FFF3E0");
+    expect(bgOf("Work")).toBe("#E3F2FD");
   });
 
   it("emits group container nodes for subgraphs and parents children", () => {
@@ -72,7 +75,7 @@ describe("convertMermaidToReactFlow", () => {
     const group = nodes.find((n) => n.type === "group");
     expect(group).toBeTruthy();
     const ingest = nodes.find((n) => n.id === "Ingest");
-    expect(ingest?.parentNode).toBe(group?.id);
+    expect(ingest?.parentId).toBe(group?.id);
     expect(ingest?.extent).toBe("parent");
   });
 

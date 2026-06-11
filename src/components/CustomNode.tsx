@@ -1,12 +1,14 @@
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "reactflow";
+import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import type { NodeShape } from "../converter/types.js";
 
-export interface CustomNodeData {
+export interface CustomNodeData extends Record<string, unknown> {
   label: string;
   shape?: NodeShape;
   style?: { backgroundColor?: string; borderColor?: string };
 }
+
+export type CustomFlowNode = Node<CustomNodeData, "custom">;
 
 const HANDLE_POSITIONS = [Position.Top, Position.Bottom, Position.Left, Position.Right] as const;
 
@@ -17,7 +19,7 @@ function renderLabel(label: string) {
   return label.split("\n").map((line, i) => <div key={i}>{line}</div>);
 }
 
-function CustomNodeInner({ data, isConnectable }: NodeProps<CustomNodeData>) {
+function CustomNodeInner({ data, isConnectable }: NodeProps<CustomFlowNode>) {
   const shape = data.shape ?? "rect";
   const className = `mrf-node mrf-shape-${shape}`;
   const style: React.CSSProperties = {

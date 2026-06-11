@@ -14,13 +14,14 @@ by albingcj — this package extracts and reimplements just the rendering half.
 ## Install
 
 ```bash
-npm install mermaid-reactflow-render reactflow react react-dom
+npm install mermaid-reactflow-render @xyflow/react react react-dom
 ```
 
-`reactflow`, `react`, and `react-dom` are **peer dependencies** — this library
-is a React Flow plugin and intentionally shares the host app's single React
-Flow instance rather than bundling its own. `@dagrejs/dagre` (used internally
-for layout) ships as a regular dependency, so you don't need to install it.
+`@xyflow/react` (React Flow 12), `react`, and `react-dom` are **peer
+dependencies** — this library is a React Flow plugin and intentionally shares
+the host app's single React Flow instance rather than bundling its own.
+`@dagrejs/dagre` (used internally for layout) ships as a regular dependency, so
+you don't need to install it.
 
 ## Usage
 

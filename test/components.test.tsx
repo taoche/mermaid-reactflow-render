@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { ReactFlowProvider } from "reactflow";
+import { ReactFlowProvider } from "@xyflow/react";
 import { CustomNode } from "../src/components/CustomNode.js";
 import { DiamondNode } from "../src/components/DiamondNode.js";
 import { GroupNode } from "../src/components/GroupNode.js";
@@ -10,28 +10,40 @@ function renderNode(ui: React.ReactElement) {
   return render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
 }
 
-const baseNodeProps = {
+// Minimal NodeProps fixture; the components only read `data`, `selected`, and
+// `isConnectable`, so the rest just satisfies the v12 NodeProps shape loosely.
+const baseNodeProps: Record<string, unknown> = {
   id: "n1",
   selected: false,
-  type: "custom",
   zIndex: 1,
   isConnectable: true,
-  xPos: 0,
-  yPos: 0,
+  positionAbsoluteX: 0,
+  positionAbsoluteY: 0,
   dragging: false,
-} as const;
+  deletable: true,
+  draggable: false,
+  selectable: true,
+  width: 120,
+  height: 48,
+};
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const CustomNodeAny = CustomNode as any;
+const DiamondNodeAny = DiamondNode as any;
+const GroupNodeAny = GroupNode as any;
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 describe("CustomNode", () => {
   it("renders the label", () => {
     renderNode(
-      <CustomNode {...baseNodeProps} data={{ label: "Hello", shape: "rect" }} />,
+      <CustomNodeAny {...baseNodeProps} data={{ label: "Hello", shape: "rect" }} />,
     );
     expect(screen.getByText("Hello")).toBeInTheDocument();
   });
 
   it("renders multi-line labels split on newline", () => {
     renderNode(
-      <CustomNode {...baseNodeProps} data={{ label: "Line A\nLine B", shape: "rect" }} />,
+      <CustomNodeAny {...baseNodeProps} data={{ label: "Line A\nLine B", shape: "rect" }} />,
     );
     expect(screen.getByText("Line A")).toBeInTheDocument();
     expect(screen.getByText("Line B")).toBeInTheDocument();
@@ -39,7 +51,7 @@ describe("CustomNode", () => {
 
   it("applies the shape class", () => {
     const { container } = renderNode(
-      <CustomNode {...baseNodeProps} data={{ label: "x", shape: "stadium" }} />,
+      <CustomNodeAny {...baseNodeProps} data={{ label: "x", shape: "stadium" }} />,
     );
     expect(container.querySelector(".mrf-shape-stadium")).toBeTruthy();
   });
@@ -48,7 +60,7 @@ describe("CustomNode", () => {
 describe("DiamondNode", () => {
   it("renders an SVG polygon and the label", () => {
     const { container } = renderNode(
-      <DiamondNode {...baseNodeProps} type="diamond" data={{ label: "Go?", shape: "diamond" }} />,
+      <DiamondNodeAny {...baseNodeProps} type="diamond" data={{ label: "Go?", shape: "diamond" }} />,
     );
     expect(container.querySelector("polygon")).toBeTruthy();
     expect(screen.getByText("Go?")).toBeInTheDocument();
@@ -58,7 +70,7 @@ describe("DiamondNode", () => {
 describe("GroupNode", () => {
   it("renders the subgraph title", () => {
     renderNode(
-      <GroupNode {...baseNodeProps} type="group" data={{ label: "My Group" }} />,
+      <GroupNodeAny {...baseNodeProps} type="group" data={{ label: "My Group" }} />,
     );
     expect(screen.getByText("My Group")).toBeInTheDocument();
   });

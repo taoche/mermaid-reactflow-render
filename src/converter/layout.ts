@@ -1,6 +1,6 @@
 import dagre from "@dagrejs/dagre";
-import type { Edge, Node } from "reactflow";
-import { MarkerType, Position } from "reactflow";
+import type { Edge, Node } from "@xyflow/react";
+import { MarkerType, Position } from "@xyflow/react";
 import { DAGRE_RANKER, EDGE_COLORS, LAYOUT_SPACING, SHAPE_COLORS, SUBGRAPH_COLORS } from "./constants.js";
 import { calculateNodeSize } from "./sizing.js";
 import type { FlowDirection, ParseResult, ParsedEdge, ParsedNode, ParsedSubgraph } from "./types.js";
@@ -393,7 +393,7 @@ function createElements(
         height: layout.height,
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
       },
-      parentNode: layout.parentId ? `subgraph-${layout.parentId}` : undefined,
+      parentId: layout.parentId ? `subgraph-${layout.parentId}` : undefined,
       extent: layout.parentId ? "parent" : undefined,
       zIndex: layout.parentId ? 1 : 0,
     });
@@ -402,7 +402,7 @@ function createElements(
   for (const node of nodes) {
     const [fill, border] = SHAPE_COLORS[node.shape];
     let position: XY = { x: 0, y: 0 };
-    let parentNode: string | undefined;
+    let parentId: string | undefined;
     let wrapperWidth = 150;
     let wrapperHeight = 60;
 
@@ -413,7 +413,7 @@ function createElements(
         position = { x: nl.x - nl.width / 2, y: nl.y - nl.height / 2 };
         wrapperWidth = Math.max(20, Math.round(nl.width));
         wrapperHeight = Math.max(20, Math.round(nl.height));
-        parentNode = `subgraph-${node.subgraph}`;
+        parentId = `subgraph-${node.subgraph}`;
       }
     } else {
       const standalone = standalonePositions.get(node.id);
@@ -437,8 +437,8 @@ function createElements(
       style: { width: wrapperWidth, height: wrapperHeight },
       sourcePosition: sourcePos,
       targetPosition: targetPos,
-      parentNode,
-      extent: parentNode ? "parent" : undefined,
+      parentId,
+      extent: parentId ? "parent" : undefined,
       zIndex: 1,
     });
   }

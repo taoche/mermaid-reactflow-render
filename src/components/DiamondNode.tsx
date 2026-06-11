@@ -1,10 +1,10 @@
 import { memo } from "react";
-import { Handle, Position, type NodeProps } from "reactflow";
-import type { CustomNodeData } from "./CustomNode.js";
+import { Handle, Position, type NodeProps } from "@xyflow/react";
+import type { CustomFlowNode } from "./CustomNode.js";
 
 const HANDLE_POSITIONS = [Position.Top, Position.Bottom, Position.Left, Position.Right] as const;
 
-function DiamondNodeInner({ data, isConnectable }: NodeProps<CustomNodeData>) {
+function DiamondNodeInner({ data, isConnectable }: NodeProps<CustomFlowNode>) {
   const fill = data.style?.backgroundColor ?? "#FFF3E0";
   const border = data.style?.borderColor ?? "#F57C00";
 

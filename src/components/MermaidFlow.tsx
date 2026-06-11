@@ -1,12 +1,13 @@
 import { useMemo } from "react";
-import ReactFlow, {
+import {
   Background,
   BackgroundVariant,
   Controls,
+  ReactFlow,
   type Edge,
   type Node,
   type ReactFlowProps,
-} from "reactflow";
+} from "@xyflow/react";
 import { convertMermaidToReactFlow } from "../converter/index.js";
 import type { FlowDirection } from "../converter/index.js";
 import { CustomNode } from "./CustomNode.js";
